@@ -1,0 +1,190 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary-dark: #000;
+    --primary-gradient: linear-gradient(180deg, #000 -3.13%, #001e7f 100%);
+  }
+}
+
+@import "mixins";
+
+// Під=========================================================================================================================================================================================================================================================================
+$fontSize: toRem(16); // де 14(px) - розмір шрифту за замовчуванням з макету
+
+// Мінімальна ширина сторінки
+$minWidth: 320;
+// Ширина полотна (макету)
+$maxWidth: 1920;
+// Ширина обмежуючого контейнера (0 = немає обмеження)
+$maxWidthContainer: 1040;
+// Загальний відступ у контейнера
+// (30 = по 15px ліворуч і праворуч, 0 = немає відступу)
+$containerPadding: 30;
+
+// Ширина спрацьовування першого брейкпоінту
+$containerWidth: $maxWidthContainer + $containerPadding;
+
+// Брейк-поїнти
+$pc: em(
+  $containerWidth
+); // ПК, ноутбуки, деякі планшети у горизонтальному положенні
+$tablet: em(991.98); // Планшети, деякі телефони в горизонтальному положенні
+$mobile: em(767.98); // Телефони L
+$mobileSmall: em(479.98); // Телефони S
+
+$responsiveType: 1;
+
+// Оболонка wrapper ============================================================================================================================================================================================================================================================================================================================================================================================================================================
+.wrapper {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  @supports (overflow: clip) {
+    overflow-x: clip;
+  }
+  > main {
+    flex: 1 1 auto;
+  }
+  > * {
+    min-width: 0;
+  }
+}
+
+@if ($responsiveType==1) {
+  // Чуйна
+  [class*="__container"] {
+    @if ($maxWidthContainer>0) {
+      max-width: toRem($containerWidth);
+      margin: 0 auto;
+    }
+    @if ($containerPadding>0) {
+      @if ($maxWidthContainer>0) {
+        padding: 0 toRem($containerPadding / 2);
+      } @else {
+        @include adaptiveValue("padding-left", $containerPadding/ 2, 15);
+        @include adaptiveValue("padding-right", $containerPadding/2, 15);
+      }
+    }
+  }
+} @else {
+  // Брейк-поїнтами
+  [class*="__container"] {
+    margin: 0 auto;
+    @if ($maxWidthContainer>0) {
+      max-width: toRem($containerWidth);
+    } @else {
+      @if ($containerPadding>0) {
+        padding: 0 toRem($containerPadding/ 2);
+      }
+    }
+    @media (max-width: $pc) {
+      max-width: toRem(970);
+    }
+    @media (max-width: $tablet) {
+      max-width: toRem(750);
+    }
+    @media (max-width: $mobile) {
+      max-width: none;
+      @if ($containerPadding>0 and $maxWidthContainer>0) {
+        padding: 0 toRem($containerPadding/2);
+      }
+    }
+  }
+}
+
+.hero-image {
+  @apply z-0 flex md:absolute md:-left-6 md:h-full md:w-auto md:max-w-none lg:left-0;
+
+  @media (min-width: em(768)) {
+    + img {
+      left: calc((150px / 648px) * 100% * -1);
+    }
+    + * + img {
+      right: calc((150px / 648px) * 100% * -1);
+      bottom: calc((110px / 648px) * 100% * -1);
+      z-index: 2;
+    }
+  }
+}
+
+.logo-ticker-image {
+  @apply h-8 w-auto;
+}
+
+.label {
+  @apply inline-flex w-fit rounded-lg border border-[#333]/10 px-3 py-1 font-medium leading-5 tracking-[-0.02rem] text-dark;
+}
+
+.subtitle {
+  @apply break-words text-left text-xl leading-7 tracking-[-0.03rem];
+}
+.ProductShowcase-image {
+  @apply relative flex items-center justify-center pb-24 pt-[40px];
+}
+@media (min-width: em(768)) {
+  .first {
+    position: absolute;
+    left: calc((160px / 1040px) * 100% * -1);
+    bottom: calc((140px / 666px) * 100% * 1);
+    z-index: 2;
+  }
+
+  .last {
+    position: absolute;
+    right: calc((150px / 1040px) * 100% * -1);
+    top: calc((60px / 666px) * 100% * -1);
+    z-index: 2;
+  }
+}
+
+.call-to {
+  img:nth-of-type(1) {
+    left: calc((130px / 1040px) * 100% * -1);
+    top: calc((50px / 442px) * 100% * -1);
+  }
+  img:nth-of-type(2) {
+    right: calc((130px / 1040px) * 100% * -1);
+    bottom: 0;
+  }
+}
+
+.testimonials-block {
+  @apply mt-10 flex gap-6 [mask-image:linear-gradient(to_bottom,transparent,black,black,black,black,transparent)];
+
+  div:nth-child(2) {
+    @apply hidden lg:flex;
+  }
+
+  div:last-child {
+    @apply hidden md:flex;
+  }
+}
+
+.logo {
+  @apply relative before:absolute before:bottom-0 before:left-0 before:z-0 before:h-8 before:w-full before:bg-[linear-gradient(90deg,_#F87BFF_0%,_#FB92CF_50%,_#FFDD9B_75%,_#C2F0B1_87.5%,_#2FD8FE_100%)] before:blur-sm before:content-[''];
+}
+
+.logos {
+  @apply flex overflow-hidden md:[mask-image:linear-gradient(to_right,transparent,black,transparent)];
+}
+
+.logos-slide {
+  @apply inline-flex flex-none items-center gap-14;
+  animation: 35s slide infinite linear;
+}
+
+@keyframes slide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.logos:hover .logos-slide {
+  animation-play-state: paused;
+}
