@@ -1,9 +1,13 @@
+"use client"
 import ArrowRight from "@/assets/arrow-right.svg"
 import Logo from "@/assets/logosaas.png"
 import MenuIcon from "@/assets/menu.svg"
 import Button from "@/components/ui/button"
-import { cn } from "@/lib/cn"
+
+import gsap from "gsap"
+import { useGSAP } from "@gsap/react"
 import Image from "next/image"
+import { useRef } from "react"
 
 export const Header = () => {
   return (
@@ -15,11 +19,23 @@ export const Header = () => {
 }
 
 function NavBar() {
-  cn()
+  const ref = useRef(null)
+
+  useGSAP(() => {
+    gsap.timeline().from(ref.current, {
+      x: -100,
+      duration: 1.5,
+      opacity: 0,
+      rotate: -360,
+      ease: "back",
+    })
+  }, [])
+
   return (
     <div className="header__container">
       <div className="flex items-center justify-between py-5">
         <a
+          ref={ref}
           href="#"
           className="relative before:absolute before:bottom-0 before:left-0 before:z-0 before:h-8 before:w-full before:bg-gradient-to-r before:from-pink-500 before:via-pink-300 before:to-yellow-500 before:blur-sm before:content-['']"
         >

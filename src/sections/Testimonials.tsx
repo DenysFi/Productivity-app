@@ -1,3 +1,5 @@
+"use client"
+
 import avatar1 from "@/assets/avatar-1.png"
 import avatar2 from "@/assets/avatar-2.png"
 import avatar3 from "@/assets/avatar-3.png"
@@ -7,8 +9,14 @@ import avatar6 from "@/assets/avatar-6.png"
 import avatar7 from "@/assets/avatar-7.png"
 import avatar8 from "@/assets/avatar-8.png"
 import avatar9 from "@/assets/avatar-9.png"
+
 import Title from "@/components/ui/title"
+import animateMainContent from "@/lib/gsap/animateMainContent"
+import { useGSAP } from "@gsap/react"
 import Image, { StaticImageData } from "next/image"
+import { useRef } from "react"
+
+import gsap from "gsap"
 
 type TestimonialsType = {
   text: string
@@ -75,6 +83,9 @@ const testimonials = [
 ]
 
 export const Testimonials = () => {
+  const ref = useRef<HTMLElement>(null)
+  const testimonialsRef = useRef<HTMLDivElement>(null)
+
   const columnCount = Math.floor(testimonials.length / 3)
   const columns = testimonials
     .map(
@@ -82,8 +93,50 @@ export const Testimonials = () => {
     )
     .filter(Boolean) as unknown as TestimonialsType[][]
 
+  useGSAP(
+    () => {
+      const master = gsap.timeline({
+        defaults: { ease: "power2.inOut", duration: 1 },
+        scrollTrigger: {
+          trigger: ref.current,
+          start: "top 80%",
+          end: "bottom bottom",
+        },
+      })
+
+      master.add(animateMainContent())
+    },
+    { scope: ref },
+  )
+  useGSAP(
+    () => {
+      const master = gsap.timeline({
+        defaults: { ease: "power2.inOut", duration: 1 },
+        scrollTrigger: {
+          trigger: ref.current,
+          start: "top 70%",
+          end: "bottom bottom",
+        },
+      })
+
+      master.from(
+        ".column > .row",
+        {
+          scale: 0,
+          ease: "back",
+          stagger: {
+            amount: 0.5,
+            from: "center",
+          },
+        },
+        "<",
+      )
+    },
+    { scope: testimonialsRef },
+  )
+
   return (
-    <section className="bg-white">
+    <section ref={ref} className="bg-white">
       <div className="__container">
         <div className="mx-auto flex max-w-[34rem] flex-col items-center gap-5">
           <span className="label">Version 2.0 is here</span>
@@ -93,16 +146,16 @@ export const Testimonials = () => {
             essential tool for users around the world.
           </p>
         </div>
-        <div className="testimonials-block">
+        <div ref={testimonialsRef} className="testimonials-block">
           {columns.map((column, i) => (
             <div
               key={i}
-              className="flex basis-[100%] flex-col gap-6 md:basis-[50%] lg:basis-[33%]"
+              className="column flex basis-[100%] flex-col gap-6 md:basis-[50%] lg:basis-[33%]"
             >
               {column.map((testimonial, index) => (
                 <article
                   key={index}
-                  className="w-full rounded-3xl border border-[#2222221A]/10 p-10 text-dark shadow-[0px_7px_14px_0px_#EAEAEA]"
+                  className="row w-full rounded-3xl border border-[#2222221A]/10 p-10 text-dark shadow-[0px_7px_14px_0px_#EAEAEA]"
                 >
                   <p className="leading-6">{testimonial.text}</p>
                   <div className="mt-5 !flex items-center gap-2">
