@@ -6,6 +6,11 @@ import Check from "@/assets/check.svg"
 import { cn } from "@/lib/cn"
 
 import { motion } from "framer-motion"
+import { useRef } from "react"
+import { useGSAP } from "@gsap/react"
+import gsap from "gsap"
+
+import animateMainContent from "@/lib/gsap/animateMainContent"
 
 const pricingTiers = [
   {
@@ -60,8 +65,46 @@ const pricingTiers = [
 ]
 
 export const Pricing = () => {
+  const ref = useRef<HTMLElement>(null)
+
+  useGSAP(
+    () => {
+      const articles = gsap.utils.toArray(".article")
+
+      const tl = gsap.timeline({
+        defaults: { ease: "power2.inOut", duration: 1 },
+        scrollTrigger: {
+          trigger: ref.current,
+          start: "top 80%",
+          end: "bottom bottom",
+        },
+      })
+
+      tl.add(animateMainContent())
+        .from(
+          ".main-image",
+          {
+            scale: 0,
+            ease: "back",
+            duration: 1.5,
+          },
+          "<0.5",
+        )
+        .from(
+          articles,
+          {
+            ease: "back",
+            opacity: 0,
+            stagger: 0.2,
+          },
+          "<0.5",
+        )
+    },
+    { scope: ref },
+  )
+
   return (
-    <section className="bg-white py-24">
+    <section ref={ref} className="bg-white py-24">
       <div className="__container">
         <div className="mx-auto mb-[40px] w-full max-w-[540px]">
           <Title>Pricing</Title>
@@ -74,7 +117,7 @@ export const Pricing = () => {
           {pricingTiers.map((tier, index) => (
             <article
               className={
-                "flex max-w-[20rem] flex-col justify-end md:basis-[33%]"
+                "article flex max-w-[20rem] flex-col justify-end md:basis-[33%]"
               }
               key={tier.title}
             >

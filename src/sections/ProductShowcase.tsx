@@ -5,16 +5,63 @@ import pyramid from "@/assets/pyramid.png"
 import tube from "@/assets/tube.png"
 import Image from "next/image"
 import { useRef } from "react"
-import { motion, useScroll, useTransform } from "framer-motion"
+import { useGSAP } from "@gsap/react"
+import animateMainContent from "@/lib/gsap/animateMainContent"
+
+import gsap from "gsap"
 
 export const ProductShowcase = () => {
-  const ref = useRef<HTMLImageElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  })
+  const ref = useRef<HTMLElement>(null)
 
-  const translateY = useTransform(scrollYProgress, [0, 1], [150, -150])
+  function animateImages() {
+    const tl = gsap.timeline({ defaults: { ease: "back" } })
+
+    const array = gsap.utils.toArray([".tube", ".pyramid"])
+
+    tl.from(".main-image", {
+      scale: 0,
+      duration: 1.5,
+    }).from(
+      array,
+      {
+        scale: 0,
+        stagger: 0.3,
+      },
+      ">-0.8",
+    )
+
+    return tl
+  }
+
+  useGSAP(
+    () => {
+      const master = gsap.timeline({
+        defaults: { ease: "power2.inOut", duration: 1 },
+        scrollTrigger: {
+          trigger: ref.current,
+          start: "top 80%",
+          end: "bottom bottom",
+        },
+      })
+
+      master.add(animateMainContent()).add(animateImages(), "<0.5")
+
+      const parallaxTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: ref.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      })
+      const parallaxItems = gsap.utils.toArray([".tube", ".pyramid"])
+
+      parallaxTl.to(parallaxItems, {
+        yPercent: -50,
+      })
+    },
+    { scope: ref },
+  )
 
   return (
     <section
@@ -33,22 +80,24 @@ export const ProductShowcase = () => {
           </div>
         </div>
         <div className="ProductShowcase-image">
-          <motion.img
-            className="first"
+          <Image
+            className="tube first"
             src={tube.src}
             alt="tube"
             width={248}
             height={248}
-            style={{ translateY }}
           />
-          <Image src={product} alt="product" />
-          <motion.img
-            className="last"
+          <Image
+            className="main-image aspect-[208/133]"
+            src={product}
+            alt="product"
+          />
+          <Image
+            className="pyramid last"
             src={pyramid.src}
             alt="pyramid"
             width={262}
             height={262}
-            style={{ translateY }}
           />
         </div>
       </div>

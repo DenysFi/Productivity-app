@@ -5,19 +5,74 @@ import CylinderImage from "@/assets/cylinder.png"
 import Noodle from "@/assets/noodle.png"
 import Button from "@/components/ui/button"
 import Title from "@/components/ui/title"
-
-import { motion, useScroll, useTransform } from "framer-motion"
-
+import animateMainContent from "@/lib/gsap/animateMainContent"
+import { useGSAP } from "@gsap/react"
+import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+import Image from "next/image"
 import { useRef } from "react"
 
 export const Hero = () => {
-  const ref = useRef<HTMLImageElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  })
+  const ref = useRef(null)
+  const titleRef = useRef<HTMLHeadingElement>(null)
+  gsap.registerPlugin(ScrollTrigger)
 
-  const translateY = useTransform(scrollYProgress, [0, 1], [150, -150])
+  function animateHeroImages() {
+    const tl = gsap.timeline({
+      defaults: { ease: "power2.inOut", duration: 1 },
+    })
+
+    const array = gsap.utils.toArray([".noodle", ".cylinder"])
+    tl.from(".hero-image", {
+      scale: 0,
+      ease: "elastic.out",
+      duration: 2.5,
+    })
+      .to(
+        ".hero-image",
+        {
+          y: -50,
+          duration: 2.5,
+          repeat: -1,
+          yoyo: true,
+        },
+        "<",
+      )
+      .from(array, { ease: "back", scale: 0, stagger: 0.3 }, "<0.5")
+      .to(
+        ".hero-image",
+        {
+          y: 50,
+          duration: 2.5,
+          repeat: -1,
+          yoyo: true,
+        },
+        "<",
+      )
+
+    return tl
+  }
+
+  useGSAP(
+    () => {
+      const tl = gsap.timeline({
+        defaults: { ease: "power2.inOut", duration: 1 },
+      })
+
+      tl.add(animateHeroImages(), "<").add(animateMainContent(), "<")
+
+      tl.to([".cylinder", ".noodle"], {
+        yPercent: "-=50",
+        scrollTrigger: {
+          trigger: ref.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      })
+    },
+    { scope: ref },
+  )
 
   return (
     <section
@@ -29,7 +84,10 @@ export const Hero = () => {
           <div>
             <div className="flex w-full max-w-[30rem] flex-col gap-6 md:gap-8">
               <p className="label">Version 2.0 is here</p>
-              <Title className="text-start text-5xl tracking-[-0.15rem]">
+              <Title
+                ref={titleRef}
+                className="text-start text-5xl tracking-[-0.15rem]"
+              >
                 Pathway to productivity
               </Title>
               <p className="subtitle">
@@ -38,7 +96,7 @@ export const Hero = () => {
                 successes.
               </p>
             </div>
-            <div className="mt-8 flex items-center gap-1">
+            <div className="buttons mt-8 flex items-center gap-1">
               <Button>Get for free</Button>
               <Button variant="text" className="flex items-center gap-1">
                 <span>Learn More</span>
@@ -47,32 +105,25 @@ export const Hero = () => {
             </div>
           </div>
           <div className="relative mt-20 flex flex-1 justify-center md:mt-0 md:h-[40rem] md:w-[40rem]">
-            <motion.img
+            <Image
               className="hero-image"
               src={Cog.src}
               alt="cog"
-              animate={{ translateY: [-30, 30] }}
-              transition={{
-                repeat: Infinity,
-                repeatType: "mirror",
-                duration: 3,
-                ease: "easeInOut",
-              }}
+              width={600}
+              height={600}
             />
-            <motion.img
+            <Image
               className="cylinder absolute hidden md:-top-8 md:block"
               width={220}
               height={220}
               src={CylinderImage.src}
-              style={{ translateY }}
               alt="cylinder"
             />
-            <motion.img
-              className="absolute hidden rotate-[30deg] md:-bottom-8 md:block"
+            <Image
+              className="noodle absolute hidden rotate-[30deg] md:-bottom-8 md:block"
               width={220}
               height={220}
               src={Noodle.src}
-              style={{ translateY, rotate: 30 }}
               alt="Noodle"
             />
           </div>

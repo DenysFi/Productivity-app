@@ -8,6 +8,9 @@ import starSrc from "@/assets/star.png"
 import springSrc from "@/assets/spring.png"
 import { useRef } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
+import { useGSAP } from "@gsap/react"
+import gsap from "gsap"
+import animateMainContent from "@/lib/gsap/animateMainContent"
 
 export const CallToAction = () => {
   const ref = useRef<HTMLImageElement>(null)
@@ -17,6 +20,22 @@ export const CallToAction = () => {
   })
 
   const translateY = useTransform(scrollYProgress, [0, 1], [150, -150])
+
+  useGSAP(
+    () => {
+      const master = gsap.timeline({
+        defaults: { ease: "power2.inOut", duration: 1 },
+        scrollTrigger: {
+          trigger: ref.current,
+          start: "top 80%",
+          end: "bottom bottom",
+        },
+      })
+
+      master.add(animateMainContent())
+    },
+    { scope: ref },
+  )
 
   return (
     <section
@@ -48,7 +67,7 @@ export const CallToAction = () => {
               your progress and motivate your efforts.
             </p>
           </div>
-          <div className="relative z-10 mt-8 flex items-center gap-1">
+          <div className="buttons relative z-10 mt-8 flex items-center gap-1">
             <Button>Get for free</Button>
             <Button variant="text" className="flex items-center gap-1">
               <span>Learn More</span>

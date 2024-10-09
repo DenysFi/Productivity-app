@@ -51,6 +51,7 @@ $responsiveType: 1;
   > * {
     min-width: 0;
   }
+  visibility: hidden;
 }
 
 @if ($responsiveType==1) {

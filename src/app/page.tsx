@@ -6,11 +6,17 @@ import { LogoTicker } from "@/sections/LogoTicker"
 import { Pricing } from "@/sections/Pricing"
 import { ProductShowcase } from "@/sections/ProductShowcase"
 import { Testimonials } from "@/sections/Testimonials"
+import { Suspense } from "react"
+import gsap from "gsap"
+import { useGSAP } from "@gsap/react"
+import Main from "@/components/ui/main"
+
+gsap.registerPlugin(useGSAP)
 
 export default function Home() {
   return (
-    <div className="wrapper">
-      <main>
+    <Suspense fallback={<div>loading</div>}>
+      <Main>
         <Header />
         <Hero />
         <LogoTicker />
@@ -19,7 +25,7 @@ export default function Home() {
         <Testimonials />
         <CallToAction />
         <Footer />
-      </main>
-    </div>
+      </Main>
+    </Suspense>
   )
 }

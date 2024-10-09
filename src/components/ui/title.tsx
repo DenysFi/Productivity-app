@@ -1,6 +1,6 @@
 import { cn } from "@/lib/cn"
 import { cva, VariantProps } from "class-variance-authority"
-import React from "react"
+import React, { forwardRef } from "react"
 
 const titleVariants = cva(
   "bg-clip-text font-bold text-black text-transparent bg-gradient-to-b from-black to-[#001E80]  gradient font-bald text-center",
@@ -21,12 +21,21 @@ type TitleProps = React.HTMLAttributes<HTMLHeadingElement> & {
   children: React.ReactNode
 } & VariantProps<typeof titleVariants>
 
-function Title({ children, size, className, ...props }: TitleProps) {
-  return (
-    <h2 className={cn(titleVariants({ className, size }))} {...props}>
-      {children}
-    </h2>
-  )
-}
+const Title = forwardRef<HTMLHeadingElement, TitleProps>(
+  ({ children, size, className, id = "title", ...props }, ref) => {
+    return (
+      <h2
+        ref={ref}
+        className={cn(titleVariants({ className, size }))}
+        id={id}
+        {...props}
+      >
+        {children}
+      </h2>
+    )
+  },
+)
+
+Title.displayName = "Title"
 
 export default Title
